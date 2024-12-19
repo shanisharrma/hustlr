@@ -1,6 +1,7 @@
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import eslintConfigPrettier from 'eslint-config-prettier';
+import eslingPluginImporter from 'eslint-plugin-import';
 
 export default tseslint.config({
   ignores: [
@@ -27,6 +28,9 @@ export default tseslint.config({
   },
   files: ['**/*.ts', '**/*.tsx'],
   extends: [eslint.configs.recommended, ...tseslint.configs.recommended, eslintConfigPrettier],
+  plugins: {
+    import: eslingPluginImporter
+  },
   rules: {
     'no-multiple-empty-lines': [2, { max: 2 }],
     semi: [2, 'always'],
@@ -40,13 +44,16 @@ export default tseslint.config({
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-namespace': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
-    'import/no-unresolved': 0
-    // 'import/order': [
-    //   'warn',
-    //   {
-    //     groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'type', 'object'],
-    //     'newlines-between': 'always'
-    //   }
-    // ]
+    // 'import/no-unresolved': ['off'],
+    'import/order': [
+      'warn',
+      {
+        groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'type', 'object'],
+        'newlines-between': 'always',
+        distinctGroup: true, // This helps in separating import groups properly
+        named: false,
+        warnOnUnassignedImports: false
+      }
+    ]
   }
 });

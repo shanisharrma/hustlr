@@ -3,6 +3,7 @@ import { IEmailLocals, winstonLogger } from '@shanisharrma/hustlr-shared';
 import { Channel, ConsumeMessage } from 'amqplib';
 import { Logger } from 'winston';
 import { createConnection } from '@notifications/queues/connection';
+
 import { sendEmail } from './mail.transport';
 
 const logger: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'emailConsumer', 'debug');

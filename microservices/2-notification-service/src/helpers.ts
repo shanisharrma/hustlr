@@ -1,9 +1,11 @@
+import path from 'path';
+
 import { Logger } from 'winston';
-import { config } from './config';
 import { IEmailLocals, winstonLogger } from '@shanisharrma/hustlr-shared';
 import nodemailer, { Transporter } from 'nodemailer';
 import Email from 'email-templates';
-import path from 'path';
+
+import { config } from './config';
 
 const logger: Logger = winstonLogger(
   `${config.ELASTIC_SEARCH_URL}`,

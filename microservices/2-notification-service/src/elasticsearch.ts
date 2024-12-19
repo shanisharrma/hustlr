@@ -1,8 +1,9 @@
 import { Client } from '@elastic/elasticsearch';
-import { config } from './config';
 import { Logger } from 'winston';
 import { winstonLogger } from '@shanisharrma/hustlr-shared';
 import { ClusterHealthHealthResponseBody } from '@elastic/elasticsearch/lib/api/typesWithBodyKey';
+
+import { config } from './config';
 
 const logger: Logger = winstonLogger(
   `${config.ELASTIC_SEARCH_URL}`,
