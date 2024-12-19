@@ -9,7 +9,6 @@ services:
     command: redis-server --loglevel warning
     volumes:
       - ./docker_volumes/cache:/data
-
   mongodb:
     container_name: mongodb_container
     image: mongo:latest
@@ -18,7 +17,6 @@ services:
       - "27017:27017"
     volumes:
       - ./docker_volumes/mongo_data:/data/db
-
   mysql:
     container_name: mysql_container
     image: mysql
@@ -27,38 +25,38 @@ services:
     # (this is just an example, not entended to be a production configuration)
     restart: always
     environment:
-      MYSQL_USER: jobber
-      MYSQL_DATABASE: jobber_auth
+      MYSQL_USER: hustlr
+      MYSQL_DATABASE: hustlr_auth
       MYSQL_ROOT_PASSWORD: api
       MYSQL_PASSWORD: api
     ports:
       - "3306:3306"
     volumes:
       - ./docker_volumes/mysql_data:/var/lib/mysql
-
   postgres:
     container_name: postgres_container
     image: postgres
     restart: always
     environment:
-      POSTGRES_USER: jobber
+      POSTGRES_USER: hustlr
       POSTGRES_PASSWORD: api
-      POSTGRES_DATABASE: jobber_reviews
+      POSTGRES_DATABASE: hustlr_reviews
     ports:
       - "5432:5432"
     volumes:
       - ./docker_volumes/postgres_data:/var/lib/postgresql
-
   rabbitmq:
     container_name: rabbitmq_container
     image: rabbitmq:4.1-rc-management-alpine
     restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: hustlr
+      RABBITMQ_DEFAULT_PASS: hustlrpass
     ports:
       # AMQP protocols port
       - "5672:5672"
       # Management UI
       - "15672:15672"
-
   elasticsearch:
     container_name: elasticsearch_container
     image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
@@ -78,7 +76,6 @@ services:
       - ./docker_volumes/elasticsearch-data:/usr/share/elasticsearch/data
     networks:
       - elastic
-
   kibana:
     container_name: kibana_container
     image: docker.elastic.co/kibana/kibana:8.17.0
@@ -92,6 +89,33 @@ services:
     volumes:
       - ./kibana.yml:/usr/share/kibana/config/kibana.yml:ro
     depends_on:
+      - elasticsearch
+
+  # all the microservices will be added here
+  notifications:
+    container_name: notification_container
+    build:
+      context: ../microservices/2-notification-service
+      dockerfile: Dockerfile.dev
+    restart: always
+    ports:
+      - "4001:4001"
+    env_file: ../microservices/2-notification-service/.env
+    environment:
+      - ENABLE_APM=0
+      - NODE_ENV=development
+      - SERVER_PORT=4001
+      - CLIENT_URL=http://localhost:3000
+      - RABBITMQ_ENDPOINT=amqp://hustlr:hustlrpass@rabbitmq_container:5672
+      - SENDER_EMAIL=hannah.effertz49@ethereal.email
+      - SENDER_EMAIL_PASSWORD=DVnawMDq8rHw2bsjyS
+      - SENDER_EMAIL_HOST=smtp.ethereal.email
+      - SENDER_EMAIL_PORT=587
+      - ELASTIC_SEARCH_URL=http://elasticsearch_container:9200
+      - ELASTIC_APM_SERVER_URL=http://localhost:8200
+      - ELASTIC_API_SECRET_TOKEN=
+    depends_on:
+      - rabbitmq
       - elasticsearch
 
 networks:
