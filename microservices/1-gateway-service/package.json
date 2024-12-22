@@ -20,7 +20,7 @@
   "description": "",
   "dependencies": {
     "@elastic/elasticsearch": "^8.17.0",
-    "@shanisharrma/hustlr-shared": "^0.0.1",
+    "@shanisharrma/hustlr-shared": "^0.0.2",
     "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
     "compression": "^1.7.5",

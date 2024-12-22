@@ -15,6 +15,7 @@ RUN npm ci && npm run build
 FROM node:22-alpine3.20
 
 WORKDIR /app
+RUN apk add --no-cache curl
 COPY package*.json ./
 COPY .npmrc ./
 RUN npm install -g pm2

@@ -12,6 +12,7 @@ import { StatusCodes } from 'http-status-codes';
 import { serverConfig } from '@gateway/config';
 import { elasticSearch } from '@gateway/elasticsearch';
 import { appRoutes } from '@gateway/routes';
+import { axiosAuthInstance } from '@gateway/services/api/auth-service';
 
 const logger: Logger = winstonLogger(`${serverConfig.ELASTIC_SEARCH_URL}`, 'APIGatewayServer', 'debug');
 
@@ -51,6 +52,13 @@ export class APIGatewayServer {
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
       })
     );
+
+    app.use((req: Request, _res: Response, next: NextFunction) => {
+      if (req.session?.jwt) {
+        axiosAuthInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
+      }
+      next();
+    });
   }
 
   private standardMiddleware(app: Application): void {
@@ -72,7 +80,7 @@ export class APIGatewayServer {
     app.use('*', (req: Request, res: Response, next: NextFunction) => {
       const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
       logger.log('error', `${fullUrl} endpoint does not exist.`, '');
-      res.status(StatusCodes.NOT_FOUND).json({ message: 'The endpoint called does not exist.' });
+      res.status(StatusCodes.NOT_FOUND).json({ message: 'The endpoint called does not exist.', url: fullUrl });
       next();
     });
 

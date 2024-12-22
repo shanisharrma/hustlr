@@ -2,7 +2,6 @@ import { Logger } from 'winston';
 import { winstonLogger } from '@shanisharrma/hustlr-shared';
 import { Client } from '@elastic/elasticsearch';
 import { ClusterHealthResponse } from '@elastic/elasticsearch/lib/api/typesWithBodyKey';
-
 import { serverConfig } from '@gateway/config';
 
 const logger: Logger = winstonLogger(`${serverConfig.ELASTIC_SEARCH_URL}`, 'APIGatewayElasticConnection', 'debug');
