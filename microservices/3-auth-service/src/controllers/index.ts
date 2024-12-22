@@ -5,3 +5,5 @@ export { update } from '@auth/controllers/verify-email';
 export { forgotPassword, resetPassword, changePassword } from '@auth/controllers/password';
 export { currentUser, resendEmail } from '@auth/controllers/current-user';
 export { refreshToken } from '@auth/controllers/refresh-token';
+export { gigs, singleGigById } from '@auth/controllers/search';
+export { seedUsers } from '@auth/controllers/seeds';

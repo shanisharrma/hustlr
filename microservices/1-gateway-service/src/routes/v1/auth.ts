@@ -1,4 +1,10 @@
-import { PasswordController, SigninController, SignupController, VerifyEmailController } from '@gateway/controllers';
+import {
+  PasswordController,
+  AuthSeedController,
+  SigninController,
+  SignupController,
+  VerifyEmailController
+} from '@gateway/controllers';
 import { Router } from 'express';
 
 class AuthRoutes {
@@ -15,6 +21,7 @@ class AuthRoutes {
     this.router.put('/forgot-password', PasswordController.prototype.forgotPassword);
     this.router.put('/reset-password/:token', PasswordController.prototype.resetPassword);
     this.router.put('/change-password', PasswordController.prototype.changePassword);
+    this.router.put('/seed/:count', AuthSeedController.prototype.seedUsers);
     return this.router;
   }
 }
