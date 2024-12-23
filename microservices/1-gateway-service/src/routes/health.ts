@@ -1,4 +1,4 @@
-import { HealthController } from '@gateway/controllers';
+import { HealthController } from '@gateway/controllers/health';
 import { Router } from 'express';
 
 class HealthRoutes {

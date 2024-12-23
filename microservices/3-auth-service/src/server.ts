@@ -71,7 +71,7 @@ function startElasticSearch(): void {
 function authErrorHandler(app: Application): void {
   // check for our custom error
   app.use((error: IErrorResponse, _req: Request, res: Response, next: NextFunction) => {
-    logger.log(`AuthService ${error.comingFrom}:`, error);
+    logger.log('error', `AuthService ${error.comingFrom}:`, error);
     if (error instanceof CustomError) {
       res.status(error.statusCode).json(error.serializeErrors());
     }
@@ -87,6 +87,6 @@ function startServer(app: Application): void {
       logger.info(`Authentication Server is running on port ${serverConfig.SERVER_PORT}`);
     });
   } catch (error) {
-    logger.log('AuthService startService() method error:', error);
+    logger.log('error', 'AuthService startService() method error:', error);
   }
 }

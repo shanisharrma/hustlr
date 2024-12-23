@@ -23,7 +23,7 @@ class ServerConfig {
 
   constructor() {
     this.JWT_TOKEN = process.env.JWT_TOKEN || '1234';
-    this.GATEWAY_JWT_TOKEN = process.env.GATE || '1234';
+    this.GATEWAY_JWT_TOKEN = process.env.GATEWAY_JWT_TOKEN || '1234';
     this.NODE_ENV = process.env.NODE_ENV || '';
     this.CLIENT_URL = process.env.CLIENT_URL || '';
     this.SECRET_KEY_TWO = process.env.SENDER_EMAIL_HOST || '';

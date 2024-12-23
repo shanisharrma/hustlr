@@ -12,7 +12,7 @@ export class AxiosService {
   public axiosCreateInstance(baseUrl: string, serviceName?: string): ReturnType<typeof axios.create> {
     let requestGatewayToken: string = '';
     if (serviceName) {
-      requestGatewayToken = JWT.sign(serviceName, `${serverConfig.GATEWAY_JWT_TOKEN}`);
+      requestGatewayToken = JWT.sign({ id: serviceName }, `${serverConfig.GATEWAY_JWT_TOKEN}`);
     }
 
     const instance: ReturnType<typeof axios.create> = axios.create({

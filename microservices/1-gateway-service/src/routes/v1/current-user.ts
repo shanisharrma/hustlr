@@ -1,4 +1,4 @@
-import { CurrentUserController, RefreshTokenController } from '@gateway/controllers';
+import { CurrentUserController, RefreshTokenController } from '@gateway/controllers/auth';
 import { authMiddleware } from '@gateway/middlewares/auth-middleware';
 import { Router } from 'express';
 

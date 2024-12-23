@@ -4,7 +4,7 @@ import {
   SigninController,
   SignupController,
   VerifyEmailController
-} from '@gateway/controllers';
+} from '@gateway/controllers/auth';
 import { Router } from 'express';
 
 class AuthRoutes {

@@ -1,4 +1,4 @@
-import { SearchController } from '@gateway/controllers';
+import { SearchController } from '@gateway/controllers/auth';
 import { Router } from 'express';
 
 class SearchRoutes {
