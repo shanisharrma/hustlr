@@ -5,6 +5,7 @@ import { authMiddleware } from '@gateway/middlewares/auth-middleware';
 import { searchRoutes } from '@gateway/routes/v1/search';
 import { buyerRoutes } from '@gateway/routes/v1/buyer';
 import { sellerRoutes } from '@gateway/routes/v1/seller';
+import { gigRoutes } from '@gateway/routes/v1/gig';
 
 const router: Router = express.Router();
 
@@ -15,5 +16,6 @@ export function v1Routes(): Router {
   router.use('/v1/auth', authMiddleware.verifyUser, currentUserRoutes.routes());
   router.use('/v1/buyer', authMiddleware.verifyUser, buyerRoutes.routes());
   router.use('/v1/seller', authMiddleware.verifyUser, sellerRoutes.routes());
+  router.use('/v1/gig', authMiddleware.verifyUser, gigRoutes.routes());
   return router;
 }
