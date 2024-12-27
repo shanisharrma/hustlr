@@ -1,4 +1,5 @@
 import { GetBuyerController } from '@gateway/controllers/users';
+import { authMiddleware } from '@gateway/middlewares/auth-middleware';
 import { Router } from 'express';
 
 class BuyerRoutes {
@@ -9,9 +10,13 @@ class BuyerRoutes {
   }
 
   public routes(): Router {
-    this.router.post('/email', GetBuyerController.prototype.getBuyerByCurrentEmail);
-    this.router.post('/username', GetBuyerController.prototype.getBuyerByCurrentUsername);
-    this.router.post('/:username', GetBuyerController.prototype.getByBuyerUsername);
+    this.router.get('/email', authMiddleware.isAuthenticated, GetBuyerController.prototype.getBuyerByCurrentEmail);
+    this.router.get(
+      '/username',
+      authMiddleware.isAuthenticated,
+      GetBuyerController.prototype.getBuyerByCurrentUsername
+    );
+    this.router.get('/:username', authMiddleware.isAuthenticated, GetBuyerController.prototype.getByBuyerUsername);
 
     return this.router;
   }

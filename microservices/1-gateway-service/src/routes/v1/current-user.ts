@@ -11,12 +11,23 @@ class CurrentUserRoutes {
 
   public routes(): Router {
     this.router.get('/current-user', authMiddleware.isAuthenticated, CurrentUserController.prototype.currentUser);
-    this.router.post('/resend-email', authMiddleware.isAuthenticated, CurrentUserController.prototype.resendEmail);
+    this.router.get(
+      '/logged-in-user',
+      authMiddleware.isAuthenticated,
+      CurrentUserController.prototype.getLoggedInUsers
+    );
     this.router.get(
       '/refresh-token/:username',
       authMiddleware.isAuthenticated,
       RefreshTokenController.prototype.refreshToken
     );
+    this.router.post('/resend-email', authMiddleware.isAuthenticated, CurrentUserController.prototype.resendEmail);
+    this.router.delete(
+      '/logged-in-user/:username',
+      authMiddleware.isAuthenticated,
+      CurrentUserController.prototype.removeLoggedInUsers
+    );
+
     return this.router;
   }
 }

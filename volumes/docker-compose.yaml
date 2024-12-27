@@ -21,8 +21,6 @@ services:
     container_name: mysql_container
     image: mysql
     user: 1000:1000
-    # NOTE: use of "mysql_native_password" is not recommended: https://dev.mysql.com/doc/refman/8.0/en/upgrading-from-previous-series.html#updagrading
-    # (this is just an example, not entended to be a production configuration)
     restart: always
     environment:
       MYSQL_USER: hustlr
@@ -147,7 +145,95 @@ services:
     depends_on:
       - rabbitmq
       - elasticsearch
+  auth:
+    container_name: auth_container
+    build:
+      context: ../microservices/3-auth-service
+      dockerfile: Dockerfile.dev
+    restart: always
+    ports:
+      - "4001:4001"
+    env_file: ../microservices/3-auth-service/.env
+    environment:
+      - ENABLE_APM=0
+      - NODE_ENV=development
+      - SERVER_PORT=4002
+      - GATEWAY_JWT_TOKEN=1c43d4cf3360a4b103c3e8094da6e28b
+      - JWT_TOKEN=8c2501bde4a9b325624a90338791b120
+      - CLIENT_URL=http://localhost:3000
+      - API_GATEWAY_URL=http://api_gateway_container:4000
+      - RABBITMQ_ENDPOINT=amqp://hustlr:hustlrpass@rabbitmq_container:5672
+      - MYSQL_DB=mysql://hustlr:api@mysql_container:3306/hustlr_auth
+      - CLOUDINARY_CLOUD_NAME=dyonzftf1
+      - CLOUDINARY_API_KEY=984827592435483
+      - CLOUDINARY_API_SECRET=saCGbEuiARozeFfvp3AZz_mNfoM
+      - ELASTIC_SEARCH_URL=http://elasticsearch_container:9200
+      - ELASTIC_APM_SERVER_URL=http://localhost:8200
+      - ELASTIC_API_SECRET_TOKEN=
+    depends_on:
+      - rabbitmq
+      - elasticsearch
+      - mysql
+  users:
+    container_name: users_container
+    build:
+      context: ../microservices/4-users-service
+      dockerfile: Dockerfile.dev
+    restart: always
+    ports:
+      - "4003:4003"
+    env_file: ../microservices/4-users-service/.env
+    environment:
+      - ENABLE_APM=0
+      - NODE_ENV=development
+      - SERVER_PORT=4003
+      - GATEWAY_JWT_TOKEN=1c43d4cf3360a4b103c3e8094da6e28b
+      - JWT_TOKEN=8c2501bde4a9b325624a90338791b120
+      - API_GATEWAY_URL=http://api_gateway_container:4000
+      - RABBITMQ_ENDPOINT=amqp://hustlr:hustlrpass@rabbitmq_container:5672
+      - DATABASE_URL=mongodb://mongodb_container:27017/hustlr_users
+      - CLOUDINARY_CLOUD_NAME=dyonzftf1
+      - CLOUDINARY_API_KEY=984827592435483
+      - CLOUDINARY_API_SECRET=saCGbEuiARozeFfvp3AZz_mNfoM
+      - REDIS_HOST=redis://redis_container:6379
+      - ELASTIC_SEARCH_URL=http://elasticsearch_container:9200
+      - ELASTIC_APM_SERVER_URL=http://localhost:8200
+      - ELASTIC_API_SECRET_TOKEN=
+    depends_on:
+      - rabbitmq
+      - elasticsearch
+      - mongodb
+  gig:
+    container_name: gig_container
+    build:
+      context: ../microservices/5-gig-service
+      dockerfile: Dockerfile.dev
+    restart: always
+    ports:
+      - "4004:4004"
+    env_file: ../microservices/5-gig-service/.env
+    environment:
+      - ENABLE_APM=0
+      - NODE_ENV=development
+      - SERVER_PORT=4003
+      - GATEWAY_JWT_TOKEN=1c43d4cf3360a4b103c3e8094da6e28b
+      - JWT_TOKEN=8c2501bde4a9b325624a90338791b120
+      - API_GATEWAY_URL=http://api_gateway_container:4000
+      - RABBITMQ_ENDPOINT=amqp://hustlr:hustlrpass@rabbitmq_container:5672
+      - DATABASE_URL=mongodb://mongodb_container:27017/hustlr_gig
+      - CLOUDINARY_CLOUD_NAME=dyonzftf1
+      - CLOUDINARY_API_KEY=984827592435483
+      - CLOUDINARY_API_SECRET=saCGbEuiARozeFfvp3AZz_mNfoM
+      - REDIS_HOST=redis://redis_container:6379
+      - ELASTIC_SEARCH_URL=http://elasticsearch_container:9200
+      - ELASTIC_APM_SERVER_URL=http://localhost:8200
+      - ELASTIC_API_SECRET_TOKEN=
+    depends_on:
+      - rabbitmq
+      - elasticsearch
+      - mongodb
 
+# Docker Networks
 networks:
   elastic:
     name: elastic

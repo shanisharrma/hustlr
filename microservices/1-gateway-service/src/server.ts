@@ -12,9 +12,20 @@ import { StatusCodes } from 'http-status-codes';
 import { serverConfig } from '@gateway/config';
 import { elasticSearch } from '@gateway/elasticsearch';
 import { appRoutes } from '@gateway/routes';
-import { axiosAuthInstance, axiosBuyerInstance, axiosSellerInstance } from '@gateway/services/api';
+import {
+  axiosAuthInstance,
+  axiosBuyerInstance,
+  axiosSellerInstance,
+  axiosGigInstance,
+  axiosChatInstance
+} from '@gateway/services/api';
+import { Server } from 'socket.io';
+import { createClient } from 'redis';
+import { createAdapter } from '@socket.io/redis-adapter';
+import { SocketIOAppHandler } from '@gateway/sockets/socket';
 
 const logger: Logger = winstonLogger(`${serverConfig.ELASTIC_SEARCH_URL}`, 'APIGatewayServer', 'debug');
+export let socketIO: Server;
 
 export class APIGatewayServer {
   private app: Application;
@@ -58,6 +69,8 @@ export class APIGatewayServer {
         axiosAuthInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
         axiosBuyerInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
         axiosSellerInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
+        axiosGigInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
+        axiosChatInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
       }
       next();
     });
@@ -99,10 +112,28 @@ export class APIGatewayServer {
   private async startServer(app: Application): Promise<void> {
     try {
       const httpServer: http.Server = new http.Server(app);
+      const socketIO: Server = await this.createSocketIO(httpServer);
       this.startHttpServer(httpServer);
+      this.socketIOConnections(socketIO);
     } catch (error) {
       logger.log('error', 'GatewayService startServer() error method:', error);
     }
+  }
+
+  private async createSocketIO(httpServer: http.Server): Promise<Server> {
+    const io: Server = new Server(httpServer, {
+      cors: {
+        origin: `${serverConfig.CLIENT_URL}`,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+      }
+    });
+
+    const pubClient = createClient({ url: serverConfig.REDIS_HOST });
+    const subClient = pubClient.duplicate();
+    await Promise.all([pubClient.connect(), subClient.connect()]);
+    io.adapter(createAdapter(pubClient, subClient));
+    socketIO = io;
+    return io;
   }
 
   private async startHttpServer(httpServer: http.Server): Promise<void> {
@@ -114,5 +145,10 @@ export class APIGatewayServer {
     } catch (error) {
       logger.log('error', 'GatewayService startHttpServer() error method:', error);
     }
+  }
+
+  private socketIOConnections(io: Server): void {
+    const socketIOApp = new SocketIOAppHandler(io);
+    socketIOApp.listen();
   }
 }

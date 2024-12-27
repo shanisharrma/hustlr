@@ -21,7 +21,7 @@ const checkConnection = async (): Promise<void> => {
       isConnected = true;
     } catch (error) {
       logger.error('Connection to Elastic Search failed. Restrying...', error);
-      logger.log('GigService checkConnection() method:', error);
+      logger.log('error', 'GigService checkConnection() method:', error);
     }
   }
 };

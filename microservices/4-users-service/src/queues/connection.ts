@@ -13,7 +13,7 @@ async function createConnection(): Promise<Channel | undefined> {
     closeConnection(channel, connection);
     return channel;
   } catch (error) {
-    logger.log('UsersService createConnection() method:', error);
+    logger.log('error', 'UsersService createConnection() method:', error);
     return undefined;
   }
 }

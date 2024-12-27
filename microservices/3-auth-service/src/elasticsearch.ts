@@ -42,7 +42,7 @@ async function createIndex(indexName: string): Promise<void> {
     }
   } catch (error) {
     logger.error(`An error occurred while creating the index ${indexName}`);
-    logger.log('AuthService createIndex() method error:', error);
+    logger.log('error', 'AuthService createIndex() method error:', error);
   }
 }
 
