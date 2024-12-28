@@ -1,12 +1,13 @@
 import { serverConfig } from '@gateway/config';
 import { GatewayCache } from '@gateway/redis/gateway-cache';
-import { IMessageDocument, winstonLogger } from '@shanisharrma/hustlr-shared';
+import { IMessageDocument, IOrderNotifcation, winstonLogger } from '@shanisharrma/hustlr-shared';
 import { Server, Socket } from 'socket.io';
 import { io, Socket as SocketClient } from 'socket.io-client';
 import { Logger } from 'winston';
 
 const logger: Logger = winstonLogger(`${serverConfig.ELASTIC_SEARCH_URL}`, 'APIGatewaySocket', 'debug');
 let chatSocketClient: SocketClient;
+let orderSocketClient: SocketClient;
 
 export class SocketIOAppHandler {
   private io: Server;
@@ -16,10 +17,12 @@ export class SocketIOAppHandler {
     this.io = io;
     this.gatewayCache = new GatewayCache();
     this.chatSocketServiceIOConnections();
+    this.orderSocketServiceIOConnections();
   }
 
   public listen(): void {
     this.chatSocketServiceIOConnections();
+    this.orderSocketServiceIOConnections();
     this.io.on('connection', async (socket: Socket) => {
       socket.on('getLoggedInUsers', async () => {
         const response: string[] | undefined = await this.gatewayCache.getLoggedInUserFromCache('loggedInUsers');
@@ -75,6 +78,32 @@ export class SocketIOAppHandler {
 
     chatSocketClient.on('message updated', (data: IMessageDocument) => {
       this.io.emit('message updated', data);
+    });
+  }
+
+  private orderSocketServiceIOConnections(): void {
+    orderSocketClient = io(`${serverConfig.ORDER_BASE_URL}`, {
+      transports: ['websocket', 'pooling'],
+      secure: true
+    });
+
+    orderSocketClient.on('connect', () => {
+      logger.info('GatewayService --> OrderService socket connected');
+    });
+
+    orderSocketClient.on('disconnect', (reason: SocketClient.DisconnectReason) => {
+      logger.log('error', 'GatewayService --> OrderService socket disconnect reason:', reason);
+      orderSocketClient.connect();
+    });
+
+    orderSocketClient.on('connect_error', (error: Error) => {
+      logger.log('error', 'GatewayService --> OrderService socket connection error:', error);
+      orderSocketClient.connect();
+    });
+
+    // custom events
+    orderSocketClient.on('order notification', (order: IOrderNotifcation, notification: IOrderNotifcation) => {
+      this.io.emit('order notification', order, notification);
     });
   }
 }

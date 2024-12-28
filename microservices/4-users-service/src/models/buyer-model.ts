@@ -9,7 +9,7 @@ const buyerSchema: Schema = new Schema(
     country: { type: String, required: true },
     isSeller: { type: Boolean, default: false },
     purchasedGigs: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Gig' }],
-    createdAt: { type: Date, default: Date.now() }
+    createdAt: { type: Date, default: Date.now }
   },
   {
     versionKey: false

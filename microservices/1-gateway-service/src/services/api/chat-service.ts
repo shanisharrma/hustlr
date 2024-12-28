@@ -12,24 +12,22 @@ class ChatServcie {
   }
 
   public async getConversation(senderUsername: string, receiverUsername: string): Promise<AxiosResponse> {
-    const response: AxiosResponse = await axiosChatInstance.get(
-      `/conversation/:${senderUsername}/:${receiverUsername}`
-    );
+    const response: AxiosResponse = await axiosChatInstance.get(`/conversation/${senderUsername}/${receiverUsername}`);
     return response;
   }
 
   public async getMessages(senderUsername: string, receiverUsername: string): Promise<AxiosResponse> {
-    const response: AxiosResponse = await axiosChatInstance.get(`/:${senderUsername}/:${receiverUsername}`);
+    const response: AxiosResponse = await axiosChatInstance.get(`/${senderUsername}/${receiverUsername}`);
     return response;
   }
 
   public async getConversationList(username: string): Promise<AxiosResponse> {
-    const response: AxiosResponse = await axiosChatInstance.get(`/conversations/:${username}`);
+    const response: AxiosResponse = await axiosChatInstance.get(`/conversations/${username}`);
     return response;
   }
 
   public async getUserMessages(conversationId: string): Promise<AxiosResponse> {
-    const response: AxiosResponse = await axiosChatInstance.get(`/:${conversationId}`);
+    const response: AxiosResponse = await axiosChatInstance.get(`/${conversationId}`);
     return response;
   }
 

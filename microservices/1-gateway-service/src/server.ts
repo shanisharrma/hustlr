@@ -17,7 +17,8 @@ import {
   axiosBuyerInstance,
   axiosSellerInstance,
   axiosGigInstance,
-  axiosChatInstance
+  axiosChatInstance,
+  axiosOrderInstance
 } from '@gateway/services/api';
 import { Server } from 'socket.io';
 import { createClient } from 'redis';
@@ -71,6 +72,7 @@ export class APIGatewayServer {
         axiosSellerInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
         axiosGigInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
         axiosChatInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
+        axiosOrderInstance.defaults.headers['Authorization'] = `Bearer ${req.session?.jwt}`;
       }
       next();
     });
