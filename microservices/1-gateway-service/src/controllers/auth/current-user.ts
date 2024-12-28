@@ -10,12 +10,12 @@ const gatewayCache: GatewayCache = new GatewayCache();
 export class CurrentUserController {
   public async currentUser(_req: Request, res: Response): Promise<void> {
     const response: AxiosResponse = await authService.getCurrentUser();
-    res.status(StatusCodes.CREATED).json({ message: response.data.message, user: response.data.user });
+    res.status(StatusCodes.OK).json({ message: response.data.message, user: response.data.user });
   }
 
   public async resendEmail(req: Request, res: Response): Promise<void> {
     const response: AxiosResponse = await authService.resendEmail(req.body);
-    res.status(StatusCodes.CREATED).json({ message: response.data.message, user: response.data.user });
+    res.status(StatusCodes.OK).json({ message: response.data.message, user: response.data.user });
   }
 
   public async getLoggedInUsers(_req: Request, res: Response): Promise<void> {
@@ -23,7 +23,7 @@ export class CurrentUserController {
     if (response) {
       socketIO.emit('online', response);
     }
-    res.status(StatusCodes.CREATED).json({ message: 'User is online' });
+    res.status(StatusCodes.OK).json({ message: 'User is online' });
   }
 
   public async removeLoggedInUsers(req: Request, res: Response): Promise<void> {
@@ -34,6 +34,6 @@ export class CurrentUserController {
     if (response) {
       socketIO.emit('online', response);
     }
-    res.status(StatusCodes.CREATED).json({ message: 'User is offline' });
+    res.status(StatusCodes.OK).json({ message: 'User is offline' });
   }
 }

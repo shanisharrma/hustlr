@@ -8,6 +8,7 @@ import { sellerRoutes } from '@gateway/routes/v1/seller';
 import { gigRoutes } from '@gateway/routes/v1/gig';
 import { chatRoutes } from '@gateway/routes/v1/chat';
 import { orderRoutes } from './order';
+import { reviewRoutes } from './review';
 
 const router: Router = express.Router();
 
@@ -21,5 +22,6 @@ export function v1Routes(): Router {
   router.use('/v1/gig', authMiddleware.verifyUser, gigRoutes.routes());
   router.use('/v1/chat', authMiddleware.verifyUser, chatRoutes.routes());
   router.use('/v1/order', authMiddleware.verifyUser, orderRoutes.routes());
+  router.use('/v1/review', authMiddleware.verifyUser, reviewRoutes.routes());
   return router;
 }

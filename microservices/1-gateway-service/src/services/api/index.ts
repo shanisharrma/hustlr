@@ -4,3 +4,4 @@ export { axiosSellerInstance, sellerService } from '@gateway/services/api/seller
 export { axiosGigInstance, gigService } from '@gateway/services/api/gig-service';
 export { axiosChatInstance, chatServcie } from '@gateway/services/api/chat-service';
 export { axiosOrderInstance, orderService } from '@gateway/services/api/order-service';
+export { axiosReviewInstance, reviewService } from '@gateway/services/api/review-service';

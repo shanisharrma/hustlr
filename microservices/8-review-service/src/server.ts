@@ -1,7 +1,7 @@
 import http from 'http';
 
 import { Logger } from 'winston';
-import { serverConfig } from '@order/config';
+import { serverConfig } from '@review/config';
 import { CustomError, IAuthPayload, IErrorResponse, winstonLogger } from '@shanisharrma/hustlr-shared';
 import { Application, NextFunction, Request, Response, urlencoded, json } from 'express';
 import hpp from 'hpp';
@@ -9,16 +9,13 @@ import helmet from 'helmet';
 import cors from 'cors';
 import JWT from 'jsonwebtoken';
 import compression from 'compression';
-import { checkConnection } from '@order/elasticsearch';
-import { appRoutes } from '@order/routes';
+import { checkConnection } from '@review/elasticsearch';
+import { appRoutes } from '@review/routes';
 import { Channel } from 'amqplib';
-import { Server } from 'socket.io';
-import { createConnection } from '@order/queues/connection';
-import { consumeReviewFanoutMessages } from '@order/queues/order-consumer';
+import { createConnection } from '@review/queues/connection';
 
-const logger: Logger = winstonLogger(`${serverConfig.ELASTIC_SEARCH_URL}`, 'orderServer', 'debug');
-let orderChannel: Channel;
-let socketIOOrderObject: Server;
+const logger: Logger = winstonLogger(`${serverConfig.ELASTIC_SEARCH_URL}`, 'reviewServer', 'debug');
+let reviewChannel: Channel;
 
 const start = (app: Application): void => {
   securityMiddleware(app);
@@ -26,7 +23,7 @@ const start = (app: Application): void => {
   routesMiddleware(app);
   startQueues();
   startElasticSearch();
-  orderErrorHandler(app);
+  reviewErrorHandler(app);
   startServer(app);
 };
 
@@ -62,18 +59,17 @@ const routesMiddleware = (app: Application): void => {
 };
 
 const startQueues = async (): Promise<void> => {
-  orderChannel = (await createConnection()) as Channel;
-  await consumeReviewFanoutMessages(orderChannel);
+  reviewChannel = (await createConnection()) as Channel;
 };
 
 const startElasticSearch = (): void => {
   checkConnection();
 };
 
-const orderErrorHandler = (app: Application): void => {
+const reviewErrorHandler = (app: Application): void => {
   // check for our custom error
   app.use((error: IErrorResponse, _req: Request, res: Response, next: NextFunction) => {
-    logger.log(`OrderService ${error.comingFrom}:`, error);
+    logger.log(`ReviewService ${error.comingFrom}:`, error);
     if (error instanceof CustomError) {
       res.status(error.statusCode).json(error.serializeErrors());
     }
@@ -84,33 +80,13 @@ const orderErrorHandler = (app: Application): void => {
 const startServer = async (app: Application): Promise<void> => {
   try {
     const httpServer: http.Server = new http.Server(app);
-    const socketIO: Server = await createSocketIO(httpServer);
-    startHttpServer(httpServer);
-    socketIOOrderObject = socketIO;
-  } catch (error) {
-    logger.log('ChatService startService() method error:', error);
-  }
-};
-
-const createSocketIO = async (httpServer: http.Server): Promise<Server> => {
-  const io: Server = new Server(httpServer, {
-    cors: {
-      origin: serverConfig.API_GATEWAY_URL,
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
-    }
-  });
-  return io;
-};
-
-const startHttpServer = (httpServer: http.Server): void => {
-  try {
-    logger.info(`Order Server started with process id ${process.pid}`);
+    logger.info(`Review Server started with process id ${process.pid}`);
     httpServer.listen(serverConfig.SERVER_PORT, () => {
-      logger.info(`Order Server is running on port ${serverConfig.SERVER_PORT}`);
+      logger.info(`Review Server is running on port ${serverConfig.SERVER_PORT}`);
     });
   } catch (error) {
-    logger.log('OrderService startHttpServer() method error:', error);
+    logger.log('ReviewService startService() method error:', error);
   }
 };
 
-export { start, orderChannel, socketIOOrderObject };
+export { start, reviewChannel };
