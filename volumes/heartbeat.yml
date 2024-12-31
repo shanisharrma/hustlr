@@ -1,0 +1,80 @@
+heartbeat.config.monitors:
+  path: ${path.config}/monitors.d/*.yml
+  reload.enabled: false
+  reload.periods: 5s
+
+heartbeat.monitors:
+  - type: http
+    id: hustlr-api-gateway
+    name: Hustlr API Gateway Service
+    schedule: "@every 5s"
+    host: ["http://192.168.157.63:4000/gateway-health"]
+    check.request.method: GET
+    check.resposne.status: [200]
+
+  - type: http
+    id: hustlr-notification
+    name: Hustlr Notification Service
+    schedule: "@every 5s"
+    host: ["http://192.168.157.63:4001/notification-health"]
+    check.request.method: GET
+    check.resposne.status: [200]
+
+  - type: http
+    id: hustlr-auth
+    name: Hustlr Auth Service
+    schedule: "@every 5s"
+    host: ["http://127.0.0.1:4002/auth-health"]
+    check.request.method: GET
+    check.resposne.status: [200]
+
+  - type: http
+    id: hustlr-users
+    name: Hustlr Users Service
+    schedule: "@every 5s"
+    host: ["http://192.168.157.63:4003/user-health"]
+    check.request.method: GET
+    check.resposne.status: [200]
+
+  - type: http
+    id: hustlr-gig
+    name: Hustlr Gig Service
+    schedule: "@every 5s"
+    host: ["http://192.168.157.63:4004/gig-health"]
+    check.request.method: GET
+    check.resposne.status: [200]
+
+  - type: http
+    id: hustlr-chat
+    name: Hustlr Chat Service
+    schedule: "@every 5s"
+    host: ["http://192.168.157.63:4005/chat-health"]
+    check.request.method: GET
+    check.resposne.status: [200]
+
+  - type: http
+    id: hustlr-order
+    name: Hustlr Order Service
+    schedule: "@every 5s"
+    host: ["http://192.168.157.63:4006/order-health"]
+    check.request.method: GET
+    check.resposne.status: [200]
+
+  - type: http
+    id: hustlr-reviews
+    name: Hustlr Reviews Service
+    schedule: "@every 5s"
+    host: ["http://192.168.157.63:4007/review-health"]
+    check.request.method: GET
+    check.resposne.status: [200]
+
+processors:
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~
+
+monitoring.enabled: true
+
+output.elasticsearch:
+  hosts: ["http://elasticsearch_container:9200"]
+  username: "elastic"
+  password: "admin1234"
